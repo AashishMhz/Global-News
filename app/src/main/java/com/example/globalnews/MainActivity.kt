@@ -3,6 +3,7 @@ package com.example.globalnews
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.globalnews.databinding.ActivityMainBinding
+import com.example.globalnews.ui.newslist.NewsListFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -13,5 +14,9 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.appBarMain.toolbar)
+
+        supportFragmentManager.beginTransaction()
+            .replace(binding.container.id, NewsListFragment())
+            .commit()
     }
 }
