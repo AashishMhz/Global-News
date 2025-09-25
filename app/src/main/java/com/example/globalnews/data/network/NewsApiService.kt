@@ -16,4 +16,9 @@ interface NewsApiService {
         @Query("q") query: String,
         @Query("apiKey") apiKey: String = "a13c0be8ab5e43e082a02d3e0d449785"
     ): NewsResponse
+
+    @GET(value = "sources")
+    suspend fun getAvailableSources(
+        @Query("apiKey") apiKey: String
+    ): NewsResponse
 }

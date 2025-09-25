@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.globalnews.data.model.Article
 import com.example.globalnews.databinding.ItemNewsVerticalBinding
+import com.example.globalnews.utils.formatWithDateUtils
 import com.example.globalnews.utils.load
 
 class BottomNewaAdapter(private val onItemClick: (Article) -> Unit) : RecyclerView.Adapter<BottomNewaAdapter.NewsViewHolder>() {
@@ -39,9 +40,11 @@ class BottomNewaAdapter(private val onItemClick: (Article) -> Unit) : RecyclerVi
     inner class NewsViewHolder(private val binding: ItemNewsVerticalBinding) :
             RecyclerView.ViewHolder(binding.root) {
                 fun bind(article: Article) {
+                    val time = formatWithDateUtils(article.publishedAt)
+                    binding.tvSource.text = article.source.name
                     binding.tvTitle.text = article.title
-                    binding.tvDescription.text = article.description
-                    binding.imgNews.load(article.imageUrl)
+                    binding.tvTime.text = time
+                    binding.imgNews.load(article.urlToImage)
                     binding.root.setOnClickListener {onItemClick(article)}
                 }
             }
