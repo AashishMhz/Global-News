@@ -21,7 +21,7 @@ class BottomNewaAdapter(private val onItemClick: (Article) -> Unit) : RecyclerVi
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): BottomNewaAdapter.NewsViewHolder {
+    ): NewsViewHolder {
         val binding = ItemNewsVerticalBinding.inflate(
             LayoutInflater.from(parent.context),
             parent, false
@@ -29,7 +29,7 @@ class BottomNewaAdapter(private val onItemClick: (Article) -> Unit) : RecyclerVi
         return NewsViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: BottomNewaAdapter.NewsViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: NewsViewHolder, position: Int) {
         holder.bind(items[position])
     }
 

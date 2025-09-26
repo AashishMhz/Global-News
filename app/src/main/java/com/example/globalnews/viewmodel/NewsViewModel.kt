@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.globalnews.data.model.Article
 import com.example.globalnews.data.network.NewsRepository
+import com.example.globalnews.utils.handleError
 import kotlinx.coroutines.launch
 
 class NewsViewModel(private val newsRepository: NewsRepository) : ViewModel() {
@@ -20,7 +21,7 @@ class NewsViewModel(private val newsRepository: NewsRepository) : ViewModel() {
     val availableSources: LiveData<List<Article>> get() = _availableSources
 
     private val apikey = "a13c0be8ab5e43e082a02d3e0d449785"
-    private val source = "bbc-news"
+    val error = MutableLiveData<String>()
 
     init {
         getTopHeadlines()
@@ -35,6 +36,8 @@ class NewsViewModel(private val newsRepository: NewsRepository) : ViewModel() {
                 _topHeadlines.value = response.articles
             } catch (e: Exception) {
                 e.printStackTrace()
+                handleError(e)
+                error.postValue(e.message)
             }
         }
     }
@@ -46,6 +49,8 @@ class NewsViewModel(private val newsRepository: NewsRepository) : ViewModel() {
                 _allNews.value = response.articles
             } catch (e: Exception) {
                 e.printStackTrace()
+                handleError(e)
+                error.postValue(e.message)
             }
         }
     }
@@ -57,6 +62,8 @@ class NewsViewModel(private val newsRepository: NewsRepository) : ViewModel() {
                 _availableSources.value = response.articles
             } catch (e: Exception) {
                 e.printStackTrace()
+                handleError(e)
+                error.postValue(e.message)
             }
         }
 
