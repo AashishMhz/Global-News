@@ -1,1 +1,1 @@
-# Global-News-XML-
+# Global-News
