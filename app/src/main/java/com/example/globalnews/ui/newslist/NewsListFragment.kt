@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
+import androidx.recyclerview.widget.RecyclerView
 import com.example.globalnews.data.remote.NetworkModule
 import com.example.globalnews.data.repository.NewsRepositoryImpl
 import com.example.globalnews.databinding.FragmentNewsListBinding
@@ -58,13 +59,42 @@ class NewsListFragment : Fragment() {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = bottomNewaAdapter
         }
+
+        val horizontalLayoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+
         binding.recyclerHorizontal.apply {
-            layoutManager =
-                LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+            layoutManager = horizontalLayoutManager
             adapter = topHeadlineNewsAdapter
             val snapHelper = PagerSnapHelper()
             snapHelper.attachToRecyclerView(this)
         }
+
+        binding.btnNext.setOnClickListener {
+            val currentPos = horizontalLayoutManager.findFirstVisibleItemPosition()
+            val nextPos = currentPos + 1
+            if (nextPos < topHeadlineNewsAdapter.itemCount) {
+                binding.recyclerHorizontal.smoothScrollToPosition(nextPos)
+            }
+        }
+
+        binding.btnPrev.setOnClickListener {
+            val currentPos = horizontalLayoutManager.findFirstVisibleItemPosition()
+            val prevPos = currentPos - 1
+            if (prevPos >= 0) {
+                binding.recyclerHorizontal.smoothScrollToPosition(prevPos)
+            }
+        }
+
+        binding.recyclerHorizontal.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                val pos = horizontalLayoutManager.findFirstVisibleItemPosition()
+                binding.btnPrev.visibility = if (pos > 0) View.VISIBLE else View.GONE
+                binding.btnNext.visibility =
+                    if (pos < topHeadlineNewsAdapter.itemCount - 1) View.VISIBLE else View.GONE
+            }
+        })
 
         binding.progressBar.visibility = View.VISIBLE
         observeData()
