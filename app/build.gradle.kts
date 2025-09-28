@@ -14,8 +14,9 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "NEWS_API_KEY", "\"a13c0be8ab5e43e082a02d3e0d449785\"")
     }
 
     buildTypes {
@@ -35,6 +36,7 @@ android {
         jvmTarget = "11"
     }
     buildFeatures{
+        buildConfig = true
         viewBinding = true
     }
 }

@@ -8,9 +8,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.globalnews.data.network.NewsRepository
+import com.example.globalnews.data.remote.NetworkModule
+import com.example.globalnews.data.repository.NewsRepositoryImpl
 import com.example.globalnews.databinding.FragmentNewsListBinding
+import com.example.globalnews.domain.usecase.NewsUseCases
 import com.example.globalnews.ui.NewsViewModelFactory
 import com.example.globalnews.ui.newsadapter.BottomNewaAdapter
 import com.example.globalnews.ui.newsadapter.TopHeadlineNewsAdapter
@@ -38,8 +39,10 @@ class NewsListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val newsRepository = NewsRepository()
-        val factory = NewsViewModelFactory(newsRepository)
+        val apiService = NetworkModule.provideNewsApiService()
+        val newsRepository = NewsRepositoryImpl(apiService)
+        val useCases = NewsUseCases(newsRepository)
+        val factory = NewsViewModelFactory(useCases)
         viewModel = ViewModelProvider(this, factory)[NewsViewModel::class.java]
 
         topHeadlineNewsAdapter = TopHeadlineNewsAdapter { article ->
@@ -60,14 +63,6 @@ class NewsListFragment : Fragment() {
             adapter = topHeadlineNewsAdapter
         }
 
-        binding.recyclerVertical.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-
-                binding?.recyclerHorizontal?.scrollBy(dx, 0)
-            }
-        })
-
         binding.progressBar.visibility = View.VISIBLE
         observeData()
     }
@@ -83,18 +78,17 @@ class NewsListFragment : Fragment() {
             bottomNewaAdapter.submitList(articles)
         }
 
-        viewModel.availableSources.observe(viewLifecycleOwner) { articles ->
-            binding.progressBar.visibility = View.GONE
-            bottomNewaAdapter.submitList(articles)
-            topHeadlineNewsAdapter.submitList(articles)
-        }
-
         viewModel.error.observe(viewLifecycleOwner) { errorMessage ->
             binding.progressBar.visibility = View.GONE
             if (!errorMessage.isNullOrBlank()) {
                 Snackbar.make(binding.root, errorMessage, Snackbar.LENGTH_SHORT).show()
             }
         }
+
+        viewModel.loading.observe(viewLifecycleOwner) { isLoading ->
+            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+        }
+
     }
 
     private fun openDetailNews(url: String) {

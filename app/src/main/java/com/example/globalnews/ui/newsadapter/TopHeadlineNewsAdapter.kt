@@ -3,7 +3,7 @@ package com.example.globalnews.ui.newsadapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.globalnews.data.model.Article
+import com.example.globalnews.domain.model.Article
 import com.example.globalnews.databinding.ItemNewsHotizontalBinding
 import com.example.globalnews.utils.formatWithDateUtils
 import com.example.globalnews.utils.load

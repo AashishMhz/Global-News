@@ -4,12 +4,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.globalnews.data.model.Article
-import com.example.globalnews.data.network.NewsRepository
-import com.example.globalnews.utils.handleError
+import com.example.globalnews.domain.model.Article
+import com.example.globalnews.domain.usecase.NewsUseCases
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class NewsViewModel(private val newsRepository: NewsRepository) : ViewModel() {
+class NewsViewModel(private val newsUseCases: NewsUseCases) : ViewModel() {
 
     private val _topHeadlines = MutableLiveData<List<Article>>()
     val topHeadlines: LiveData<List<Article>> get() = _topHeadlines
@@ -20,52 +21,60 @@ class NewsViewModel(private val newsRepository: NewsRepository) : ViewModel() {
     private val _availableSources = MutableLiveData<List<Article>>()
     val availableSources: LiveData<List<Article>> get() = _availableSources
 
-    private val apikey = "a13c0be8ab5e43e082a02d3e0d449785"
-    val error = MutableLiveData<String>()
+    private val _loading = MutableLiveData(false)
+    val loading: LiveData<Boolean> get() = _loading
+
+    private val _error = MutableLiveData<String?>(null)
+    val error: LiveData<String?> get() = _error
 
     init {
-        getTopHeadlines()
+        getTopHeadlines("us")
         getAllNews("everything")
         getAvailableSources()
     }
 
-    private fun getTopHeadlines() {
+    fun getTopHeadlines(country: String) {
         viewModelScope.launch {
+            _loading.value = true
             try {
-                val response = newsRepository.getTopHeadlines("us", apikey)
-                _topHeadlines.value = response.articles
+                val articles = newsUseCases.getTopHeadlines(country)
+                _topHeadlines.value = articles
+                _error.value = null
             } catch (e: Exception) {
-                e.printStackTrace()
-                handleError(e)
-                error.postValue(e.message)
+                _error.value = e.message ?: "Unknown error"
+            } finally {
+                _loading.value = false
             }
         }
     }
 
     private fun getAllNews(query: String) {
         viewModelScope.launch {
+            _loading.value = true
             try {
-                val response = newsRepository.getNews(query, apikey)
-                _allNews.value = response.articles
+                val articles = newsUseCases.getNews(query)
+                _allNews.value = articles
+                _error.value = null
             } catch (e: Exception) {
-                e.printStackTrace()
-                handleError(e)
-                error.postValue(e.message)
+                _error.value = e.message ?: "Unknown error"
+            } finally {
+                _loading.value = false
             }
         }
     }
 
     private fun getAvailableSources() {
         viewModelScope.launch {
+            _loading.value = true
             try {
-                val response = newsRepository.getAvailableSources(apikey)
-                _availableSources.value = response.articles
+                val articles = newsUseCases.getSources()
+                _availableSources.value = articles
+                _error.value = null
             } catch (e: Exception) {
-                e.printStackTrace()
-                handleError(e)
-                error.postValue(e.message)
+                _error.value = e.message ?: "Unknown error"
+            } finally {
+                _loading.value = false
             }
         }
-
     }
 }

@@ -1,4 +1,4 @@
-package com.example.globalnews.data.model
+package com.example.globalnews.domain.model
 
 data class Source(
     val id: String,
