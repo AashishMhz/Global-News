@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.PagerSnapHelper
 import com.example.globalnews.data.remote.NetworkModule
 import com.example.globalnews.data.repository.NewsRepositoryImpl
 import com.example.globalnews.databinding.FragmentNewsListBinding
@@ -61,6 +62,8 @@ class NewsListFragment : Fragment() {
             layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
             adapter = topHeadlineNewsAdapter
+            val snapHelper = PagerSnapHelper()
+            snapHelper.attachToRecyclerView(this)
         }
 
         binding.progressBar.visibility = View.VISIBLE
